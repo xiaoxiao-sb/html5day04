@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            background-color: #7e8c8d;
+        }
+
+        canvas {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+<canvas id="test" width="400" height="300"></canvas>
+<script type="text/javascript">
+    //页面加载
+    window.onload = function () {
+        var canvas = document.querySelector("#test");
+        if (!canvas.getContext) return;
+        var ctx = canvas.getContext("2d");
+        // //绘制一个矩形
+        ctx.fillStyle="red";
+        ctx.fillRect(10,10,100,100);
+        var path=canvas.toDataURL();//当前的图片的路径
+        console.log(path);
+
+
+    };
+</script>
+
+</body>
+</html>

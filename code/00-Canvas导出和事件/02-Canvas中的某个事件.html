@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            border: 1px solid red;
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+<canvas id="test" width="300" height="200"></canvas>
+<script type="text/javascript">
+    window.onload = function () {
+        var canvas = document.querySelector("#test");
+        if (!canvas.getContext) return;
+        var ctx = canvas.getContext("2d");
+
+        ctx.fillStyle = "green";
+        ctx.arc(100, 100, 50, 0, 360 * Math.PI / 180);
+        ctx.fill();
+
+        canvas.onclick=function (e) {
+            e =e ||window.event;
+            var x=e.clientX-canvas.offsetLeft;
+            var y=e.clientY-canvas.offsetTop;
+          if(ctx.isPointInPath(x,y)){
+              console.log("在这个范围内被点击了");
+          }
+        };
+    };
+</script>
+</body>
+</html>

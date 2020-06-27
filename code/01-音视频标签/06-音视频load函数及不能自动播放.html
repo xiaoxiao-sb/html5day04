@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<video  controls width="500" height="500" >
+    <source src="../resource/video/test.mp4"></source>
+</video>
+<audio   controls  >
+    <source src="../resource/audio/test.mp3"></source>
+</audio>
+</body>
+<script type="text/javascript">
+    window.onload=function(){
+        var video = document.querySelector("video");
+        var audio = document.querySelector("audio");
+
+        //举例:什么可能会用到重新加载
+        //获取video,更换路径,需要重新的加载
+        var s=video.getElementsByTagName("source")[0];
+        s.src="../resource/video/OUTPUT.ogvf";
+        s.type="video/ogv";
+        video.load();//重新加载
+
+
+        //https://blog.csdn.net/hangge0111/article/details/85334019
+
+        //chrome://flags/#autoplay-policy 设置============自动播放
+
+        /*
+        打开谷歌浏览器:  输入下面的这个路径
+        chrome://flags/#autoplay-policy 设置============自动播放
+
+        找到这个选项
+
+        Autoplay policy
+         Policy used when deciding if audio or video is allowed to autoplay. – Mac, Windows, Linux, Chrome OS, Android
+
+         #autoplay-policy
+
+         把右侧的Default:这个修改成下面的样子
+         No user gesture is required.
+
+
+         */
+
+    }
+</script>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            border: 1px solid red;
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+<canvas id="test" width="600" height="600"></canvas>
+<script type="text/javascript">
+    window.onload = function () {
+        var canvas = document.querySelector("#test");
+        if (!canvas.getContext) return;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle="red";
+        ctx.fillRect(100,100,10,10);
+
+        var imageData=ctx.getImageData(100,100,10,10);
+        console.log(imageData);
+        console.log(imageData.data);
+        console.log(imageData.width);
+        console.log(imageData.height);
+        console.log(imageData.data.length);
+        //坐标是从0到399
+        var flag=0;
+        for(var i=0;i<imageData.data.length;i++){//循环400次肯定不变
+            //i=99的时候已经满足了所有的条件了,不需要再继续修改了,但是后面会继续的遍历
+            flag++;
+            //如果是这么操作,i=0的时候 0 ,1 ,2 ,3 下标的位置绘制了一次,但是i=1的时候,又把1,2,3绘制了一次
+            imageData.data[4*i]=255;
+            imageData.data[4*i+1]=255;
+
+            imageData.data[4*i+2]=255;
+            imageData.data[4*i+3]=255;
+            //只读的
+
+        }
+        console.log("遍历的次数:"+flag);
+        //我设置了data的length
+        imageData.data.length=1000;
+        console.log("此时的length:"+imageData.data.length);
+        ctx.putImageData(imageData,150,150);
+
+
+//
+//         ImageData.data 只读
+//         Uint8ClampedArray 描述了一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示。
+// ImageData.height 只读
+//         无符号长整型（unsigned long），使用像素描述 ImageData 的实际高度。
+// ImageData.width 只读
+//         无符号长整型（unsigned long），使用像素描述 ImageData 的实际宽度。
+
+
+        //直接崩溃
+        // var arr=[1,2,3,4];
+        // for(var i=0;i<arr.length;i++){
+        //     arr[i*3]=100;
+        // }
+        // console.log(arr.length);
+    };
+</script>
+</body>
+</html>

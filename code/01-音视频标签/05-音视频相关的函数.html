@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<video src="../resource/video/test.mp4" controls width="500" height="500" ></video>
+<audio src="../resource/audio/test.mp3"  controls  ></audio>
+
+
+
+
+</body>
+<script type="text/javascript">
+    window.onload=function(){
+
+
+
+        //============================谷歌自动播放的问题
+
+        //https://blog.csdn.net/hangge0111/article/details/85334019
+
+        //chrome://flags/#autoplay-policy 设置============自动播放
+
+        console.log("=============");
+        //video.play();
+        //audio.play();
+
+        setTimeout(function(){
+            video.pause();
+            audio.pause();
+        },5000);
+
+
+
+    }
+</script>
+</html>

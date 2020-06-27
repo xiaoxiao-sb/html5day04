@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<div id="wrap">
+    <video src="https://blz-videos.nosdn.127.net/1/OverWatch/AnimatedShots/Overwatch_AnimatedShot_Soldier76_Hero.mp4"></video>
+    <div class="controls">
+        <div class="btns">
+            <span class="start"></span>
+            <span class="stop"></span>
+        </div>
+        <div class="progress">
+            <div class="container">
+                <div class="inner"></div>
+            </div>
+            <div class="deeppink"></div>
+        </div>
+        <div class="time-sound">
+            <div class="time">
+                <span class="now">00:00:00</span>/<span class="all">00:00:00</span>
+            </div>
+            <div class="sound">
+                <div class="muted">
+                    <span></span>
+                </div>
+                <div class="sound-progress">
+                    <div class="sound-container">
+                        <div class="sound-inner"></div>
+                    </div>
+                    <div class="sound-pink"></div>
+                </div>
+            </div>
+            <div class="full-screen">
+                <span></span>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/drag.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //页面加载
+    window.onload = function () {
+
+
+        //获取最外面的wrap
+        var wrap = document.querySelector("#wrap");
+        //获取video
+        var video = document.querySelector("video");
+        //获取控件区
+        var controls = document.querySelector(".controls");
+        //获取开始按钮
+        var start = document.querySelector(".start");
+        //获取暂停按钮
+        var stop = document.querySelector(".stop");
+        //获取进度条
+        var progress = document.querySelector(".progress");
+        //获取中间的进度条
+        var deepPink = document.querySelector(".deeppink");
+        //获取中间进度条拖动按钮
+        var inner = document.querySelector(".inner");
+        //获取显示时间的div
+        var time = document.querySelector(".time");
+        //显示时间的div里面的两个span
+        var timeNow = document.querySelector(".now");
+        //显示所有时间的span
+        var timeAll = document.querySelector(".all");
+        //获取声音的进度条
+        var soundPink = document.querySelector(".sound-pink");
+        //获取声音的拖动按钮
+        var soundInner = document.querySelector(".sound-inner");
+        //音量条
+        var soundProgress = document.querySelector(".sound-progress");
+        //静音按钮
+        var muted = document.querySelector(".muted");
+        //获取静音的div中的span
+        var mutedSpan = document.querySelector(".muted>span");
+        //获取全屏div中的span
+        var fullScreenSpan = document.querySelector(".full-screen>span");
+        var fullScreen = document.querySelector(".full-screen");
+
+        //页面加载后,设置满屏状态
+        video.width = document.documentElement.clientWidth;
+        video.height = document.documentElement.clientHeight - controls.clientHeight;
+        window.onresize = function () {
+            if (document.documentElement.clientWidth >= 600) {
+                //设置全屏
+                video.width = document.documentElement.clientWidth;
+                video.height = document.documentElement.clientHeight - controls.clientHeight;
+            }
+        };
+        var flag=0;//静音的操作
+        //第一个功能拖动进度条和音量条
+        var proCall = {
+            move: function () {
+                //进度条
+                this.style.left = deepPink.style.width = this.offsetLeft + "px";
+                //进度条的拖拽功能
+                var scale=(this.offsetLeft)/(progress.clientWidth-this.offsetWidth);
+                video.currentTime=scale*video.duration;
+            }
+        };
+        var soundCall = {
+            move: function () {
+                this.style.left = soundPink.style.width = this.offsetLeft + "px";
+                //记录音量的值
+                var scale=(this.offsetLeft/(soundProgress.clientWidth-this.offsetWidth))
+                flag=scale;//比例
+                //音量就等于这个比例
+                video.volume=scale;
+                //判断这个声音的值是不是0,涉及到是否静音
+                if(video.volume===0){
+                    //静音啦
+                    video.muted=true;
+                    mutedSpan.classList.add("active");
+                }else{
+                    //不用静音,加上样式
+                    video.muted=false;
+                    mutedSpan.classList.remove("active");
+                }
+            }
+        };
+        $.drag(inner, proCall);
+        $.drag(soundInner, soundCall);
+
+        player();
+
+
+        //第二个功能播放和暂停及其他
+        function player() {
+            var timeId = 0;
+
+            function move() {
+                //移动进度条的函数
+                inner.style.left = deepPink.style.width = ((video.currentTime / video.duration) * (progress.clientWidth - inner.offsetWidth)) + "px";
+                //把当前的时间显示在 now时间的位置
+                timeNow.innerHTML=changeTime(video.currentTime);
+            }
+
+            //第二个功能播放
+            start.onclick = function () {
+                //点击的时候判断是否暂停
+                if (video.paused) {
+                    //停止了就要播放,设置样式
+                    video.play();
+                    this.classList.add("active");
+                    //播放的同时移动进度条
+                    timeId = setInterval(move, 1000);
+                } else {
+                    video.pause();
+                    this.classList.remove("active");
+                    //停止的同时进度条停止
+                    clearInterval(timeId);
+                }
+            };
+
+            //第三个功能停止
+            stop.onclick = function () {
+                //停止的时候,清掉开始按钮的样式,停止播放,同时进度条清掉,当前时间为0
+                video.pause();
+                start.classList.remove("active");
+                clearInterval(timeId);
+                video.currentTime = 0;
+                inner.style.left = deepPink.style.width = "0px";
+            };
+
+            //第四个功能点击进度条快进
+            progress.onclick = function (e) {
+                e = e || window.event
+                //播放按钮样式改变
+                start.classList.add("active");
+                video.play();
+                timeId = setInterval(move, 1000);
+                //计算当前的时间:比例*总时间
+                video.currentTime = video.duration * ((e.clientX - this.offsetLeft) / (this.clientWidth - inner.offsetWidth));
+
+            };
+
+            //第五个功能:加载当前时间和总时间(move函数中获取当前的时间并显示)
+            video.addEventListener("loadeddata", function () {
+                timeAll.innerHTML = changeTime(video.duration);
+            });
+
+            function changeTime(time) {
+                //转小时和分钟和秒
+                time = parseInt(time);
+                var h = Math.floor(time / 3600);
+                var m = Math.floor(time % 3600 / 60);
+                var s = Math.floor(time % 60);
+                h = h < 10 ? "0" + h : h;
+                m = m < 10 ? "0" + m : m;
+                s = s < 10 ? "0" + s : s;
+                return h + ":" + m + ":" + s;
+            }
+
+            //音量进度条计算:默认声音是最大的
+            soundInner.style.left=soundPink.style.width=(soundProgress.clientWidth-soundInner.offsetWidth)+"px";
+            //第六个功能:静音操作
+            muted.onclick=function () {
+              if(video.muted){
+                  //此时已经静音了,那就别静音
+                  video.muted=false;
+                  mutedSpan.classList.add("active");
+                  video.volume=1;
+                  flag=flag==0?1:flag;//需要回到移动音量条的soundCall中
+                  soundInner.style.left=soundPink.style.width=(soundProgress.clientWidth-soundInner.offsetWidth)*flag+"px";
+              }else{
+                  //此时没有静音,那就静音
+                  video.muted=true;
+                  mutedSpan.classList.remove("active");
+                  video.volume=0;
+                  soundInner.style.left=soundPink.style.width="0px";
+              }
+            };
+
+            //全屏
+            var isFull=false;//默认没有全屏
+            fullScreenSpan.onclick=function () {
+              if(isFull){
+                  //此时已经全屏了
+                  isFull=false;
+                  fullScreenSpan.classList.remove("active");
+                  if(document.exitFullscreen){
+                      document.exitFullscreen();
+                  }else if(document.mozCancelFullScreen){
+                      document.mozCancelFullScreen();
+                  }else if(document.msExifFullscreen){
+                      document.msExifFullscreen();
+                  }
+              }else{
+                  //此时没有全屏呢,
+                  isFull=true;
+                  fullScreenSpan.classList.add("active");
+                  var docElm=document.documentElement;
+                  if(docElm.requestFullscreen){
+                      docElm.requestFullscreen();//W3c的
+                  }else if(docElm.mozRequestFullScreen){
+                      docElm.mozRequestFullScreen();//火狐的
+                  }else if(docElm.webkitRequestFullScreen){
+                      docElm.webkitRequestFullScreen();//谷歌的
+                  }else if(docElm.msRequestFullScreen){
+                      docElm.msRequestFullScreen();//IE11
+                  }
+              }
+            };
+        }
+
+
+    };
+
+</script>
+</body>
+</html>
